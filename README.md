@@ -45,74 +45,59 @@ Figure 1: Overview of VLA-Touch. <b>Left:</b> Tactile-Assisted Task Planning—T
 Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given a scene image $s_t$ and task goal $g$, the VLM Task Planner generates manipulation instruction $I_k$ for policy execution. A tactile-language model (Octopi) converts a sequence tactile input $o^m_{t-n:t}$ to language description $L^m_t$, which informs VLM for updated instruction. **Manipulation**: The base VLA $\pi(a_t|s_t,I_k)$ generates action chunk $a_t$ based on visual observation $s_t$ and instruction $I_k$. The action chunk is then refined by an interpolant policy $\pi_I(\hat a_t|s_t,a_t,m_t)$ that takes as input both visual embeddings from a pretrained DinoV2 model and low-dimensional tactile signals $m_t$ processed a marker tracking algorithm from raw tactile input $o^m_t$.
 
 
-# 💻 Code
-
-Code will be released soon.
 
 
+# 💻 Installation
+1. Follow [RDT-1B installation](https://github.com/thu-ml/RoboticsDiffusionTransformer).
 
-
-
-<br> </br>
-# 🏷️ License
-**VLA-Touch** is licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
-
-
-<br> </br>
-# 🙏 Acknowledgement
-
-**VLA-Touch** is developed based on many open-sourced works, including [BRIDGeR](https://github.com/clear-nus/bridger), [Octopi](https://github.com/clear-nus/octopi) and [RDT-1B](https://github.com/thu-ml/RoboticsDiffusionTransformer). We thank all these authors for their nicely open sourced code and their great contributions to the community.
-
-
-<!-- # 💻 Installation
-
-Install KOAP and D3IL Benchmark:
+2. Git Clone VLA-Touch and copy files to RDT-1B (replace original files).
 ```bash
-# Clone KOAP
 git clone https://github.com/jxbi1010/KOAP
-
-# Install D3IL benchmark from the official repository
-cd KOAP/src/environments
-git clone https://github.com/ALRhub/d3il
-cd d3il
-pip install -e .
 ```
 
-Follow `environments/d3il/README.md` to register gym environment.
+3. Download dataset and controller checkpoints from [google drive folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing).
+
+    a) Copy files in controller_ckpt/ to VLA/residual_controller/checkpoints/
+
+4. Dataset processing:
+
+    a) Copy files in vla_data/ to VLA/data/datasets
+
+    b) Run scripts in VLA/data/franka_data to convert raw data to .h5 data. The resulted data should be similar to vla_data/wipe_example/episode_*.h5
+
+    c) If you need our processed dataset, kindly approach us.
+
+5. Compute dataset_stats using RDT scripts and update RDT configs.
 
 
-```bash
-# Install Vector-Quantization package for baseline methods:
-pip install vector-quantize-pytorch
+6. Install Octopi, follow octopi/README.md.
 
-# Install other dependencies:
-pip install -r requirements.txt
-```
+7. Copy files from [google drive folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing)/octopi_data/ to octopi/octopi_s/data/.
 
-Download the dataset to `environments/dataset/data/` following the D3IL benchmark instructions.
-```bash
-# Generate observation dataset for training
-python create_small_dataset.py
-```
 
 # 🛠️ Usage
-
-To reproduce our experimental results, run the following commands:
+1. Follow RDT-1B for VLA base model finetuning without tactile data.
+2. Run scripts in residual_controller/ for controller training and test, e.g.
 
 ```bash
-# Train and evaluate KOAP method
-python run_script_koap.py
+# training for interpolant controller
+python bridge_train.py
 
-# Train and evaluate baseline methods
-python run_script_<method>.py
+# testing for interpolant controller
+python bridger_test.py
+
+#training for residual controller
+python lstm_train.py
+
+# testing for residual controller
+python lstm_step_test.py
 ```
 
-Replace `<method>` with the specific baseline method you want to run.
+3. For ocpoti inference, run octopi/octopi_s/touch_vla.py using your own VLM API.
+4. Inference code will release soon.
 
 
-
-
-# 📝 Citation
+<!-- # 📝 Citation
 
 If you find our work useful, please consider citing:
 ```bibtex
@@ -125,4 +110,13 @@ If you find our work useful, please consider citing:
       primaryClass={cs.RO},
       url={https://arxiv.org/abs/2410.07584}, 
 }
-``` -->
+```  -->
+
+<br></br>
+# 🏷️ License
+**VLA-Touch** is licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
+
+<br></br>
+# 🙏 Acknowledgement
+
+**VLA-Touch** is developed based on many open-sourced works, including [BRIDGeR](https://github.com/clear-nus/bridger), [Octopi](https://github.com/clear-nus/octopi) and [RDT-1B](https://github.com/thu-ml/RoboticsDiffusionTransformer). We thank all these authors for their nicely open sourced code and their great contributions to the community.
