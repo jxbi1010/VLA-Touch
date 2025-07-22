@@ -50,10 +50,7 @@ Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given
 Code will be released soon.
 
 
-<br> </br>
-# 🙏 Acknowledgement
 
-**VLA-Touch** is developed based on many open-sourced works, including [BRIDGeR](https://github.com/clear-nus/bridger), [Octopi](https://github.com/clear-nus/octopi) and [RDT-1B](https://github.com/thu-ml/RoboticsDiffusionTransformer). We thank all these authors for their nicely open sourced code and their great contributions to the community.
 
 
 <br> </br>
@@ -61,7 +58,10 @@ Code will be released soon.
 **VLA-Touch** is licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
 
 
+<br> </br>
+# 🙏 Acknowledgement
 
+**VLA-Touch** is developed based on many open-sourced works, including [BRIDGeR](https://github.com/clear-nus/bridger), [Octopi](https://github.com/clear-nus/octopi) and [RDT-1B](https://github.com/thu-ml/RoboticsDiffusionTransformer). We thank all these authors for their nicely open sourced code and their great contributions to the community.
 
 
 <!-- # 💻 Installation
