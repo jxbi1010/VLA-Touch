@@ -6,9 +6,9 @@
 <!-- [![pytorch](https://img.shields.io/badge/Python-PyTorch-orange.svg)](https://www.pytorch.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/jxbi1010/KOAP/blob/master/LICENSE)
 [![arXiv](https://img.shields.io/badge/ArXiv-2410.07584-b31b1b.svg)](https://arxiv.org/abs/2410.07584)
-[![ICRA 2025](https://img.shields.io/badge/ICRA%202025-Accepted-purple.svg)](https://icra2025.org) -->
+[![ICRA 2025](https://img.shields.io/badge/ICRA%202025-Accepted-purple.svg)](https://icra2025.org)
 
-<!-- This repo will release the code implementation for VLA-Touch:
+This repo will release the code implementation for VLA-Touch:
 
 <p align="center">&nbsp;<table><tr><td>
     <p align="center">
@@ -94,7 +94,7 @@ python lstm_step_test.py
 ```
 
 3. For ocpoti inference, run octopi/octopi_s/touch_vla.py using your own VLM API.
-4. Inference code will release soon.
+4. Inference method is modified based on RDT inference sccript, our version will release soon.
 
 
 <!-- # 📝 Citation
