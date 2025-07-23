@@ -4,11 +4,12 @@
 
 
 <!-- [![pytorch](https://img.shields.io/badge/Python-PyTorch-orange.svg)](https://www.pytorch.org)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/jxbi1010/KOAP/blob/master/LICENSE)
-[![arXiv](https://img.shields.io/badge/ArXiv-2410.07584-b31b1b.svg)](https://arxiv.org/abs/2410.07584)
-[![ICRA 2025](https://img.shields.io/badge/ICRA%202025-Accepted-purple.svg)](https://icra2025.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/jxbi1010/VLA-Touch/blob/master/LICENSE)
+[![arXiv](https://img.shields.io/badge/ArXiv-2410.07584-b31b1b.svg)](https://arxiv.org/abs/2410.07584) -->
 
-This repo will release the code implementation for VLA-Touch:
+<!-- [![ICRA 2025](https://img.shields.io/badge/ICRA%202025-Accepted-purple.svg)](https://icra2025.org) -->
+
+<!-- This repo contains the code implementation for VLA-Touch:
 
 <p align="center">&nbsp;<table><tr><td>
     <p align="center">
@@ -17,9 +18,10 @@ This repo will release the code implementation for VLA-Touch:
             VLA-Touch: Enhancing Vision-Language-Action Models with Dual-Level Tactile Feedback
         </a><br/>
     </strong>
-    Jianxin Bi <sup>1</sup>, Kevin Ma <sup>1</sup>, Ce Hao <sup>1</sup>, Mike Zheng Shou <sup>1</sup>, Harold Soh <sup>1,2</sup><br>
-    <sup>1</sup><em>Department of Computer Science, National University of Singapore</em><br>
-    <sup>2</sup><em>Smart System Institute, NUS</em>
+    Jianxin Bi <sup>1</sup>, Kevin Yuchen Ma <sup>1,3</sup>, Ce Hao <sup>1</sup>, Mike Zheng Shou <sup>1,3</sup>, Harold Soh <sup>1,2</sup><br>
+    <sup>1</sup><em>Dept. of Computer Science, National University of Singapore</em><br>
+    <sup>2</sup><em>Smart Systems Institute, NUS</em><br>
+    <sup>3</sup><em>Show Lab, NUS</em>
 </td></tr></table>&nbsp; -->
 
 
@@ -27,15 +29,6 @@ This repo will release the code implementation for VLA-Touch:
 
 
 We present **VLA-Touch**, an approach that enhances generalist robot policies with tactile sensing *without fine-tuning* the base VLA. Our method introduces two key innovations: (1) a pipeline that leverages a pretrained tactile-language model that provides semantic tactile feedback for high-level task planning, and (2) a diffusion-based controller that refines VLA-generated actions with tactile signals for contact-rich manipulation. Through real-world experiments, we demonstrate that our dual-level integration of tactile feedback improves task planning efficiency while enhancing execution precision. 
-
-<!-- <div align="center">
-  <img src="assets/teaser.jpg" alt="VLA-Touch Framework" width="700">
-</div>
-
-
-Figure 1: Overview of VLA-Touch. <b>Left:</b> Tactile-Assisted Task Planning—The VLM task planner actively acquires tactile feedback; Octopi interprets contacted objects and generates linguistic tactile descriptions to inform subsequent plans. <b>Right:</b> Tactile-Enhanced Manipulation—The Interpolant Model refines VLA-generated actions using tactile signals, enabling improved contact-rich interactions (e.g., more consistent contact with the mango surface during peeling). -->
-
-
 
 <div align="center">
   <img src="assets/framework.jpg" alt="VLA-Touch Framework" width="700">
@@ -48,31 +41,58 @@ Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given
 
 
 # 💻 Installation
-1. Follow [RDT-1B installation](https://github.com/thu-ml/RoboticsDiffusionTransformer).
 
-2. Git Clone VLA-Touch and copy files to RDT-1B (replace original files).
-```bash
-git clone https://github.com/jxbi1010/KOAP
-```
+1. **Follow RDT-1B installation**  
+   See the official instructions:  [RDT-1B installation](https://github.com/thu-ml/RoboticsDiffusionTransformer)
 
-3. Download dataset and controller checkpoints from [google drive folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing).
+2. **Clone VLA-Touch and copy files to RDT-1B (replace original files):**
+   ```bash
+   git clone https://github.com/jxbi1010/VLA-Touch
+   # Copy relevant files to your RDT-1B directory, replacing originals as needed
+   ```
 
-    a) Copy files in controller_ckpt/ to VLA/residual_controller/checkpoints/
+3. **Download dataset and controller checkpoints:**  [Google Drive Folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing)
 
-4. Dataset processing:
+   - Copy controller checkpoints:
+     ```bash
+     cp controller_ckpt/* VLA/residual_controller/checkpoints/
+     ```
 
-    a) Copy files in vla_data/ to VLA/data/datasets
+4. **Dataset processing:**
 
-    b) Run scripts in VLA/data/franka_data to convert raw data to .h5 data. The resulted data should be similar to vla_data/wipe_example/episode_*.h5
+   - Copy dataset files:
+     ```bash
+     cp vla_data/* VLA/data/datasets/
+     ```
 
-    c) If you need our processed dataset, kindly approach us.
+   - Convert raw data to `.h5` format:
+     ```bash
+     # Run the provided scripts to convert raw data
+     cd VLA/data/franka_data
+     python convert*_to_h5.py  # Replace with actual processing scripts
+     # The resulting files should look like: vla_data/wipe_example/episode_*.h5
+     ```
 
-5. Compute dataset_stats using RDT scripts and update RDT configs.
+   - *If you need our processed dataset, kindly approach us.*
 
+5. **Compute dataset stats and update configs:**
+   ```bash
+   # Use RDT scripts to compute dataset statistics
+   python compute_dataset_stats.py 
+   ```
 
-6. Install Octopi, follow octopi/README.md.
+6. **Install Octopi:**  
+   Follow the instructions in:
+   ```
+   octopi/README.md
+   ```
 
-7. Copy files from [google drive folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing)/octopi_data/ to octopi/octopi_s/data/.
+7. **Copy Octopi data files:**
+   ```bash
+   # Download from Google Drive and copy to the correct location
+   cp octopi_data/* octopi/octopi_s/data/
+   ```
+   [Google Drive Folder for Octopi Data](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing)
 
 
 # 🛠️ Usage
@@ -94,7 +114,7 @@ python lstm_step_test.py
 ```
 
 3. For ocpoti inference, run octopi/octopi_s/touch_vla.py using your own VLM API.
-4. Inference method is modified based on RDT inference sccript, our version will release soon.
+4. Inference method is modified based on RDT inference script, our version will release soon.
 
 
 <!-- # 📝 Citation
