@@ -3,18 +3,18 @@
 </p>
 
 
-<!-- [![pytorch](https://img.shields.io/badge/Python-PyTorch-orange.svg)](https://www.pytorch.org)
+[![pytorch](https://img.shields.io/badge/Python-PyTorch-orange.svg)](https://www.pytorch.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/jxbi1010/VLA-Touch/blob/master/LICENSE)
-[![arXiv](https://img.shields.io/badge/ArXiv-2410.07584-b31b1b.svg)](https://arxiv.org/abs/2410.07584) -->
+[![arXiv](https://img.shields.io/badge/ArXiv-2410.07584-b31b1b.svg)](https://arxiv.org/abs/2507.17294)
 
 <!-- [![ICRA 2025](https://img.shields.io/badge/ICRA%202025-Accepted-purple.svg)](https://icra2025.org) -->
 
-<!-- This repo contains the code implementation for VLA-Touch:
+This repo contains the code implementation for VLA-Touch:
 
 <p align="center">&nbsp;<table><tr><td>
     <p align="center">
     <strong>
-        <a href="https://arxiv.org/abs/2410.07584">
+        <a href="https://arxiv.org/abs/2507.17294">
             VLA-Touch: Enhancing Vision-Language-Action Models with Dual-Level Tactile Feedback
         </a><br/>
     </strong>
@@ -22,7 +22,7 @@
     <sup>1</sup><em>Dept. of Computer Science, National University of Singapore</em><br>
     <sup>2</sup><em>Smart Systems Institute, NUS</em><br>
     <sup>3</sup><em>Show Lab, NUS</em>
-</td></tr></table>&nbsp; -->
+</td></tr></table>&nbsp;
 
 
 # 🧾 Introduction
@@ -117,20 +117,20 @@ python lstm_step_test.py
 4. Inference method is modified based on RDT inference script, our version will release soon.
 
 
-<!-- # 📝 Citation
+# 📝 Citation
 
 If you find our work useful, please consider citing:
 ```bibtex
-@misc{bi2025imitationlearninglimitedactions,
-      title={Imitation Learning with Limited Actions via Diffusion Planners and Deep Koopman Controllers}, 
-      author={Jianxin Bi and Kelvin Lim and Kaiqi Chen and Yifei Huang and Harold Soh},
+@misc{bi2025vlatouchenhancingvisionlanguageactionmodels,
+      title={VLA-Touch: Enhancing Vision-Language-Action Models with Dual-Level Tactile Feedback}, 
+      author={Jianxin Bi and Kevin Yuchen Ma and Ce Hao and Mike Zheng Shou and Harold Soh},
       year={2025},
-      eprint={2410.07584},
+      eprint={2507.17294},
       archivePrefix={arXiv},
       primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2410.07584}, 
+      url={https://arxiv.org/abs/2507.17294}, 
 }
-```  -->
+``` 
 
 <br></br>
 # 🏷️ License
