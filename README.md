@@ -24,6 +24,9 @@ This repo contains the code implementation for VLA-Touch:
     <sup>3</sup><em>Show Lab, NUS</em>
 </td></tr></table>&nbsp;
 
+**[[Arxiv]](https://arxiv.org/abs/2507.17294)**
+**[[Project Page]](https://jxbi1010.github.io/vla-touch-gh-pages/)**
+**[[Video]](https://www.youtube.com/watch?v=Idgodm4wV3M)**
 
 # 🧾 Introduction
 
