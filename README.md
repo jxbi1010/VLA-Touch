@@ -26,7 +26,7 @@ This repo contains the code implementation for VLA-Touch:
 
 **[[Arxiv]](https://arxiv.org/abs/2507.17294)**
 **[[Project Page]](https://jxbi1010.github.io/vla-touch-gh-pages/)**
-**[[Video]](https://www.youtube.com/watch?v=Idgodm4wV3M)**
+**[[Video]](https://youtu.be/XLAKKjS_fd4)**
 
 # 🧾 Introduction
 
