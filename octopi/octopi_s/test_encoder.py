@@ -9,6 +9,28 @@ from utils.dataset import TactilePropertyRegressionDataset, regression_collate_f
 from utils.encoder import CLIPVisionEncoder, ViFiCLIP, Adapter, PropertyClassifier, load_encoder
 from transformers import CLIPImageProcessor, AutoTokenizer
 import pickle
+import argparse
+
+
+# Experiment configurations
+EXPERIMENTS = {
+    "mango": {
+        "datasets": ["mango"],
+        "data_path": "data/mango_new_samples_span",
+        "threshold": 3.0,
+        "property_idx": 0,  # First property dimension
+        "label_names": ["soft", "hard"],
+        "output_files": ["soft.npy", "hard.npy"]
+    },
+    "wipe": {
+        "datasets": ["wipe"],
+        "data_path": "data/wipe_samples_span",
+        "threshold": 7.0,
+        "property_idx": 1,  # Second property dimension
+        "label_names": ["pink", "brown"],  # smooth, rough
+        "output_files": ["pink.npy", "brown.npy"]
+    }
+}
 
 
 def load_model_configs(exp_path):
@@ -17,53 +39,12 @@ def load_model_configs(exp_path):
         configs = yaml.safe_load(file)
     return configs
 
-# def load_models(configs, exp_path, device):
-#     """Load trained models from experiment directory."""
-#     # Load model components
-#     tactile_encoder = CLIPVisionEncoder(clip_model=configs["use_clip"]).to(device)
-    
-#     # Load ViFiCLIP
-#     if configs["prompt_learning"]:
-#         # If prompt learning was used, you may need to load those configs
-#         with open(os.path.join(exp_path, "prompt_learning.yaml"), 'r') as f:
-#             prompt_learning_configs = yaml.safe_load(f)
-#         # Initialize with prompt learning configs
-#         from utils.llm import PromptLearningCLIPModel
-#         clip = PromptLearningCLIPModel.from_pretrained(configs["use_clip"], prompt_learning_configs)
-#     else:
-#         # Standard initialization
-#         from transformers import CLIPModel
-#         clip = CLIPModel.from_pretrained(configs["use_clip"])
-    
-#     # Initialize model components
-#     tactile_vificlip = ViFiCLIP(clip, freeze_text_encoder=True, use_positional_embeds=True).to(device)
-#     plain_tactile_adapter = Adapter(
-#         input_size=configs["dim_context_vision"], 
-#         output_size=configs["dim_context_vision"], 
-#         residual_ratio=configs["residual_ratio"]
-#     ).to(device)
-#     property_classifier = PropertyClassifier(input_size=configs["dim_context_vision"]).to(device)
-    
-#     # Load saved weights
-#     tactile_vificlip.load_state_dict(torch.load(os.path.join(exp_path, "tactile_vificlip.pt"), map_location=device))
-#     plain_tactile_adapter.load_state_dict(torch.load(os.path.join(exp_path, "plain_tactile_adapter.pt"), map_location=device))
-#     property_classifier.load_state_dict(torch.load(os.path.join(exp_path, "property_classifier.pt"), map_location=device))
-    
-#     models = {
-#         "tactile_vificlip": tactile_vificlip,
-#         "plain_tactile_adapter": plain_tactile_adapter,
-#         "property_classifier": property_classifier
-#     }
-    
-#     return models
-
-def evaluate(models, dataloader, device):
+def evaluate(models, dataloader, device, exp_config):
     """Evaluate models on the given dataloader."""
     models["tactile_vificlip"].eval()
     models["property_classifier"].eval()
     models["dotted_tactile_adapter"].eval()
     
-    ce_loss_fn = torch.nn.CrossEntropyLoss()
     mse_loss_fn = torch.nn.MSELoss()
     total_loss = 0
     all_preds = []
@@ -86,7 +67,6 @@ def evaluate(models, dataloader, device):
             prop_preds = models["property_classifier"](plain_tactile_video_features)
             
             # Calculate loss
-            # loss = ce_loss_fn(prop_preds, properties.squeeze(1).to(device).long())
             loss = mse_loss_fn(prop_preds, properties.squeeze(1).to(device))
             total_loss += loss.item() * batch_size
             
@@ -98,56 +78,61 @@ def evaluate(models, dataloader, device):
     all_labels = np.concatenate(all_labels, axis=0)
     all_paths = np.concatenate(all_paths, axis=0)
     
-    # Get predicted classes
-    # pred_classes = np.argmax(all_preds, axis=1)
-    # true_classes = all_labels.squeeze(1)
-
-    # wipe: 100% success rate
-    pred_classes = all_preds[:, 1] > 7
-    true_classes = all_labels[:, 1] > 7
-
-    # mango
-    # thres = 3.0
-    # pred_classes = all_preds[:, 0] > thres
-    # true_classes = all_labels[:, 0] > thres
+    # Get predicted classes based on experiment type
+    property_idx = exp_config["property_idx"]
+    threshold = exp_config["threshold"]
+    pred_classes = all_preds[:, property_idx] > threshold
+    true_classes = all_labels[:, property_idx] > threshold
     
     # Calculate accuracy
     accuracy = np.mean(pred_classes == true_classes)
-    hard = []
-    soft = []
-    # print("all_labels", all_labels)
-    # print("all_preds", all_preds)
+    
+    # Separate samples by class
+    class_0_samples = []  # Below threshold (soft/pink)
+    class_1_samples = []  # Above threshold (hard/brown)
+    
     for i in range(num_samples):
-        print("label:", all_labels[i], "preds:", all_preds[i])
-        # print(true_classes[i], pred_classes[i])
-        # if all_labels[i][0] == 1:
-        #     pink.append(all_preds[i])
-        # else:
-        #     brown.append(all_preds[i])
-        if all_labels[i][0] == 6:
-            hard.append((all_preds[i], all_paths[i]))
-        else:
-            soft.append((all_preds[i], all_paths[i]))
+        print(f"label: {all_labels[i]}, preds: {all_preds[i]}")
+        
+        if true_classes[i]:  # Above threshold
+            class_1_samples.append((all_preds[i], all_paths[i]))
+        else:  # Below threshold
+            class_0_samples.append((all_preds[i], all_paths[i]))
 
     return {
         "total_loss": total_loss,
         "num_samples": num_samples,
         "avg_loss": total_loss / num_samples,
         "accuracy": accuracy
-    }, hard, soft #, pink, brown
+    }, class_0_samples, class_1_samples
 
 def main():
-    # Path to your experiment directory containing the trained models
-    # exp_path = input("Enter path to experiment directory: ")
-    exp_path = "/home/allenbi/PycharmProjects24/octopi/octopi-s-main/octopi-s-main/configs"
-    # Example: "/path/to/exps/2025_04_28_12_34_56_train_encoder_distributed_my_experiment"
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Test encoder on mango or wipe experiments')
+    parser.add_argument('--experiment', type=str, choices=['mango', 'wipe'], required=True,
+                        help='Which experiment to run: mango (soft/hard) or wipe (pink/brown)')
+    parser.add_argument('--exp-path', type=str, 
+                        default="configs",
+                        help='Path to experiment directory containing trained models')
+    parser.add_argument('--batch-size', type=int, default=16,
+                        help='Batch size for evaluation')
+    parser.add_argument('--output-dir', type=str, default=".",
+                        help='Directory to save output .npy files')
+    args = parser.parse_args()
+    
+    # Get experiment configuration
+    exp_config = EXPERIMENTS[args.experiment]
+    print(f"\n{'='*60}")
+    print(f"Running {args.experiment.upper()} experiment")
+    print(f"Classes: {exp_config['label_names'][0]} vs {exp_config['label_names'][1]}")
+    print(f"{'='*60}\n")
     
     # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
     # Load configurations
-    configs = load_model_configs(exp_path)
+    configs = load_model_configs(args.exp_path)
     print("Loaded configurations")
     
     # Create data loader for test set
@@ -158,20 +143,15 @@ def main():
     test_dataset = TactilePropertyRegressionDataset(
         image_processor=image_processor, 
         tokenizer=tokenizer, 
-        # data_path=configs["data_dir"], 
-        # data_path="/home/allenbi/PycharmProjects24/octopi/octopi-s-main/octopi-s-main/data/wipe_samples_span",
-        data_path="/home/allenbi/PycharmProjects24/octopi/octopi-s-main/octopi-s-main/data/online_inference",
+        data_path=exp_config["data_path"],
         split_name="test", 
-        # datasets=configs["datasets"],
-        datasets=["wipe"],
-        # datasets=["mango"],
+        datasets=exp_config["datasets"],
         frame_size=configs["frame_size"]
     )
     
     test_loader = DataLoader(
         test_dataset, 
-        # batch_size=configs["batch_size"], 
-        batch_size=16,
+        batch_size=args.batch_size,
         shuffle=False, 
         collate_fn=regression_collate_fn
     )
@@ -179,7 +159,6 @@ def main():
     print(f"Created test dataloader with {len(test_dataset)} samples")
     
     # Load models
-    # models = load_models(configs, exp_path, device)
     tactile_vificlip, dotted_tactile_adapter, plain_tactile_adapter, property_classifier, load_exp_configs = load_encoder(configs, device)
     models = {
         "tactile_vificlip": tactile_vificlip,
@@ -189,45 +168,61 @@ def main():
     print("Models loaded successfully")
     
     # Evaluate on test set
-    print("Starting evaluation...")
-    # results, pink, brown = evaluate(models, test_loader, device)
-    results, hard, soft = evaluate(models, test_loader, device)
+    print("\nStarting evaluation...")
+    results, class_0_samples, class_1_samples = evaluate(models, test_loader, device, exp_config)
     
     # Print results
-    print("\nEvaluation Results:")
+    print(f"\n{'='*60}")
+    print("Evaluation Results:")
     print(f"Test Loss: {results['avg_loss']:.4f}")
     print(f"Test Accuracy: {results['accuracy']:.4f} ({results['accuracy']*100:.2f}%)")
+    print(f"Total samples: {results['num_samples']}")
+    print(f"{exp_config['label_names'][0]} samples: {len(class_0_samples)}")
+    print(f"{exp_config['label_names'][1]} samples: {len(class_1_samples)}")
+    print(f"{'='*60}\n")
     
-    # Save results to file
-    results_file = os.path.join(exp_path, "test_evaluation_results.json")
+    # Save results to JSON file
+    results_file = os.path.join(args.exp_path, f"test_evaluation_results_{args.experiment}.json")
     with open(results_file, 'w') as f:
-        json.dump(results, f, indent=4)
-    
+        json.dump({
+            **results,
+            "experiment": args.experiment,
+            "threshold": exp_config["threshold"],
+            "property_idx": exp_config["property_idx"],
+            "label_names": exp_config["label_names"]
+        }, f, indent=4)
     print(f"Results saved to {results_file}")
-
-    # np.save("pink.npy", np.asarray(pink))
-    # np.save("brown.npy", np.asarray(brown))
-    # for i in range(len(pink)):
-    #     input("\nEnter to get new pair")
-    #     print('pink:', pink[i], 'brown:', brown[i])
     
-    # hard = np.asarray(hard)
-    # soft = np.asarray(soft)
-    # np.save("hard.npy", hard)
-    # np.save("soft.npy", soft)
-    # print(np.mean(hard[:, 0]), np.mean(soft[:, 0]))
-    # with open('hard.pkl', 'wb') as f:
-    #     pickle.dump(hard, f)
-    # with open('soft.pkl', 'wb') as f:
-    #     pickle.dump(soft, f)
+    # Save predictions to .npy files
+    class_0_array = np.array([sample[0] for sample in class_0_samples])
+    class_1_array = np.array([sample[0] for sample in class_1_samples])
+    
+    class_0_file = os.path.join(args.output_dir, exp_config["output_files"][0])
+    class_1_file = os.path.join(args.output_dir, exp_config["output_files"][1])
+    
+    np.save(class_0_file, class_0_array)
+    np.save(class_1_file, class_1_array)
+    print(f"\nSaved {exp_config['label_names'][0]} predictions to {class_0_file}")
+    print(f"Saved {exp_config['label_names'][1]} predictions to {class_1_file}")
+    
+    # Calculate pairwise comparison success rate
     n_success = 0
-    for i in range(len(hard)):
-        # input("\nEnter to get new pair")
-        print('hard:', hard[i][0], 'soft:', soft[i][0])
-        if hard[i][0][0] > soft[i][0][0]:
+    n_comparisons = min(len(class_0_samples), len(class_1_samples))
+    
+    print(f"\nPairwise Comparisons ({n_comparisons} pairs):")
+    for i in range(n_comparisons):
+        class_0_pred = class_0_samples[i][0]
+        class_1_pred = class_1_samples[i][0]
+        
+        # Check if class_1 (hard/brown) has higher prediction than class_0 (soft/pink)
+        if class_1_pred[exp_config["property_idx"]] > class_0_pred[exp_config["property_idx"]]:
             n_success += 1
-
-    print('n_success', n_success)
+        
+        print(f"Pair {i+1}: {exp_config['label_names'][0]}={class_0_pred[exp_config['property_idx']]:.3f}, "
+              f"{exp_config['label_names'][1]}={class_1_pred[exp_config['property_idx']]:.3f}")
+    
+    pairwise_accuracy = n_success / n_comparisons if n_comparisons > 0 else 0
+    print(f"\nPairwise comparison success: {n_success}/{n_comparisons} ({pairwise_accuracy*100:.2f}%)")
 
 if __name__ == "__main__":
     main()

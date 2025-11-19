@@ -503,6 +503,8 @@ def load_encoder(configs, device):
         load_exp_configs = yaml.safe_load(open(os.path.join(configs["load_exp_path"], "run.yaml"), 'r'))
     if "prompt_learning.yaml" in os.listdir(configs["load_exp_path"]):
         prompt_learning_configs = yaml.safe_load(open(os.path.join(configs["load_exp_path"], "prompt_learning.yaml")))
+        # NOTE: the weights of prompt learning CLIP is loaded again inside ViFiCLIP, so here we just need to pass the configs.
+        # Please ignore the warning of missing keys when loading state dict.
         clip = PromptLearningCLIPModel.from_pretrained(prompt_learning_configs["use_clip"], prompt_learning_configs).to(device)
     else:
         clip = CLIPModel.from_pretrained(configs["use_clip"]).to(device)
