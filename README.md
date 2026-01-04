@@ -76,6 +76,8 @@ Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given
      ```
 
    - *If you need our processed dataset, kindly approach us.*
+  
+   - Updates: [Hugging Face for Processed Dataset](https://huggingface.co/datasets/AllenBi21/VLA-Touch)
 
 5. **Compute dataset stats and update configs:**
    ```bash
@@ -95,6 +97,7 @@ Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given
    cp octopi_data/* octopi/octopi_s/data/
    ```
    [Google Drive Folder for Octopi Data](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing)
+   
 
 
 # 🛠️ Usage
