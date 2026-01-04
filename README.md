@@ -18,10 +18,9 @@ This repo contains the code implementation for VLA-Touch:
             VLA-Touch: Enhancing Vision-Language-Action Models with Dual-Level Tactile Feedback
         </a><br/>
     </strong>
-    Jianxin Bi <sup>1</sup>, Kevin Yuchen Ma <sup>1,3</sup>, Ce Hao <sup>1</sup>, Mike Zheng Shou <sup>1,3</sup>, Harold Soh <sup>1,2</sup><br>
+    Jianxin Bi <sup>1</sup>, Kevin Yuchen Ma <sup>1</sup>, Ce Hao <sup>1</sup>, Mike Zheng Shou <sup>1</sup>, Harold Soh <sup>1,2</sup><br>
     <sup>1</sup><em>Dept. of Computer Science, National University of Singapore</em><br>
     <sup>2</sup><em>Smart Systems Institute, NUS</em><br>
-    <sup>3</sup><em>Show Lab, NUS</em>
 </td></tr></table>&nbsp;
 
 **[[Arxiv]](https://arxiv.org/abs/2507.17294)**
