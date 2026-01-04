@@ -53,14 +53,14 @@ Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given
    # Copy relevant files to your RDT-1B directory, replacing originals as needed
    ```
 
-3. **Download dataset and controller checkpoints:**  [Google Drive Folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing)
+3. **Download dataset and controller checkpoints:**  [Google Drive Folder](https://drive.google.com/drive/folders/1k_tGMJVIhZX6KHRa0SRjM73hvHaVEXvW?usp=sharing) or [Hugging Face for Processed Dataset](https://huggingface.co/datasets/AllenBi21/VLA-Touch)
 
    - Copy controller checkpoints:
      ```bash
      cp controller_ckpt/* VLA/residual_controller/checkpoints/
      ```
 
-4. **Dataset processing:**
+4. **Dataset processing (for reference):**
 
    - Copy dataset files:
      ```bash
@@ -77,7 +77,7 @@ Figure 1:Dual-level Tactile feedback framework of VLA-Touch. **Planning**: Given
 
    - *If you need our processed dataset, kindly approach us.*
   
-   - Updates: [Hugging Face for Processed Dataset](https://huggingface.co/datasets/AllenBi21/VLA-Touch)
+
 
 5. **Compute dataset stats and update configs:**
    ```bash
