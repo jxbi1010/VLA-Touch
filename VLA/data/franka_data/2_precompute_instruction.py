@@ -174,5 +174,5 @@ if __name__ == "__main__":
     print(f"Dataset Directory: {dataset_directory}")
     print("=" * 40)
     embedding_path = os.path.join(dataset_directory,'all_instruction_embeddings.pt')
-    embeddings = torch.load(embedding_path)
+    embeddings = torch.load(embedding_path, weights_only=True)
     print(embeddings.keys())
